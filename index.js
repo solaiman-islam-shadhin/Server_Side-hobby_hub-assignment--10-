@@ -16,45 +16,56 @@ const uri = `mongodb+srv://${process.env.DB_USER}:${encodedPassword}@assignmetn-
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  }
+    serverApi: {
+        version: ServerApiVersion.v1,
+        strict: true,
+        deprecationErrors: true,
+    }
 });
 
 async function run() {
-  try {
-    await client.connect();
-    const GrouopData =client.db("hobby_hub").collection("createdGroup");
+    try {
+        await client.connect();
+        const GrouopData = client.db("hobby_hub").collection("createdGroup");
 
-app.get("/groups",async(req,res) =>{  
-    const result =await GrouopData.find().toArray();
-   
-    res.send(result);
-})
-app.get("/group-details/:id",async(req,res) =>{  
-    const id =req.params.id;
-    const query ={_id : new ObjectId(id)}
-    const result = await GrouopData.findOne(query)
-    res.send(result);
-})
+        app.get("/groups", async (req, res) => {
+            const result = await GrouopData.find().toArray();
 
-app.post("/createGroup",async(req,res) =>{
-    const group =req.body;
-    console.log(group)
-     const result = await GrouopData.insertOne(group);
-        res.send(result);
-})
+            res.send(result);
+        })
+        app.get("/group-details/:id", async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await GrouopData.findOne(query)
+            res.send(result);
+        })
 
-    await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+        app.post("/createGroup", async (req, res) => {
+            const group = req.body;
+            console.log(group)
+            const result = await GrouopData.insertOne(group);
+            res.send(result);
+        })
+
+        //user related api
+
+        const userCollection = client.db("hobby_hub").collection("users");
+
+        app.post("/users", async(req,res)=> {
+            const userData = req.body;
+            const result =await userCollection.insertOne(userData)
+            res.send(result);
+        })
+
+
+        await client.db("admin").command({ ping: 1 });
+        console.log("Pinged your deployment. You successfully connected to MongoDB!");
 
 
 
-  } catch (error) {
-    console.error("MongoDB connection error:", error);
-  }
+    } catch (error) {
+        console.error("MongoDB connection error:", error);
+    }
 }
 run();
 
