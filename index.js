@@ -11,13 +11,6 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-app.get("/", (req, res) => {
-    res.send("Assignment 10 server is running");
-}
-);
-
-
-// URL encode the password to handle special characters
 const encodedPassword = encodeURIComponent(process.env.DB_PASSWORD);
 const uri = `mongodb+srv://${process.env.DB_USER}:${encodedPassword}@assignmetn-10.is3vjll.mongodb.net/?retryWrites=true&w=majority`;
 
@@ -32,18 +25,37 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
-    // Connect the client to the server
     await client.connect();
-    // Send a ping to confirm a successful connection
+    const GrouopData =client.db("hobby_hub").collection("createdGroup");
+
+app.get("/groups",async(req,res) =>{  
+    const result =await GrouopData.find().toArray();
+    console.log(result)
+    res.send(result);
+})
+
+app.post("/createGroup",async(req,res) =>{
+    const group =req.body;
+    console.log(group)
+     const result = await GrouopData.insertOne(group);
+        res.send(result);
+})
+
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
+
+
+
   } catch (error) {
     console.error("MongoDB connection error:", error);
   }
 }
 run();
 
-
+app.get("/", (req, res) => {
+    res.send("Assignment 10 server is running");
+}
+);
 app.listen(port, () => {
     console.log(`Assignment 10 server is running on port: ${port}`);
 });
