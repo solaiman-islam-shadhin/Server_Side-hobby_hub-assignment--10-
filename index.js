@@ -30,7 +30,13 @@ async function run() {
 
 app.get("/groups",async(req,res) =>{  
     const result =await GrouopData.find().toArray();
-    console.log(result)
+   
+    res.send(result);
+})
+app.get("/group-details/:id",async(req,res) =>{  
+    const id =req.params.id;
+    const query ={_id : new ObjectId(id)}
+    const result = await GrouopData.findOne(query)
     res.send(result);
 })
 
