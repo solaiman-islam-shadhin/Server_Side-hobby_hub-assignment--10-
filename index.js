@@ -40,6 +40,14 @@ async function run() {
             res.send(result);
         })
 
+        app.get("/users/:email", async (req, res) => {
+            const email = req.params.email;
+          
+            const query = { email: email }
+            const result = await userCollection.findOne(query);
+            res.send(result);
+        })
+
         app.post("/createGroup", async (req, res) => {
             const group = req.body;
             console.log(group)
@@ -51,9 +59,9 @@ async function run() {
 
         const userCollection = client.db("hobby_hub").collection("users");
 
-        app.post("/users", async(req,res)=> {
+        app.post("/users", async (req, res) => {
             const userData = req.body;
-            const result =await userCollection.insertOne(userData)
+            const result = await userCollection.insertOne(userData)
             res.send(result);
         })
 
