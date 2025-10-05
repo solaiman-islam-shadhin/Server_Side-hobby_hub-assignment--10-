@@ -27,6 +27,7 @@ async function run() {
     try {
         await client.connect();
         const GrouopData = client.db("hobby_hub").collection("createdGroup");
+        const userCollection = client.db("hobby_hub").collection("users");
 
         app.get("/groups", async (req, res) => {
             const result = await GrouopData.find().toArray();
@@ -40,11 +41,11 @@ async function run() {
             res.send(result);
         })
 
-        app.get("/users/:email", async (req, res) => {
+
+        app.get("/my-groups/:email", async (req, res) => {
             const email = req.params.email;
-          
             const query = { email: email }
-            const result = await userCollection.findOne(query);
+            const result = await GrouopData.find(query).toArray();
             res.send(result);
         })
 
@@ -54,16 +55,42 @@ async function run() {
             const result = await GrouopData.insertOne(group);
             res.send(result);
         })
+        app.delete("/group/:id", async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await GrouopData.deleteOne(query)
+            res.send(result);
+        })
+
+        app.put("/group-details/:id", async (req, res) => {
+            const id = req.params.id;
+            const data = req.body;
+            const filter = { _id: new ObjectId(id) }
+            const UpdatedDoc = {
+                $set: data
+            }
+            const options = { upsert: true };
+            const result = await GrouopData.updateOne(filter, UpdatedDoc, options);
+            res.send(result);
+        })
 
         //user related api
+        app.get("/users/:email", async (req, res) => {
+            const email = req.params.email;
 
-        const userCollection = client.db("hobby_hub").collection("users");
+            const query = { email: email }
+            const result = await userCollection.findOne(query);
+            res.send(result);
+        })
 
         app.post("/users", async (req, res) => {
             const userData = req.body;
             const result = await userCollection.insertOne(userData)
             res.send(result);
         })
+
+
+
 
 
         await client.db("admin").command({ ping: 1 });
