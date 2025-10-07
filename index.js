@@ -1,10 +1,9 @@
-import dotenv from "dotenv";
-dotenv.config();
+
 import express from "express";
 import cors from "cors";
 import { MongoClient, ServerApiVersion, ObjectId } from "mongodb";
-
-
+import dotenv from "dotenv";
+dotenv.config();
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -14,7 +13,7 @@ app.use(express.json());
 const encodedPassword = encodeURIComponent(process.env.DB_PASSWORD);
 const uri = `mongodb+srv://${process.env.DB_USER}:${encodedPassword}@assignmetn-10.is3vjll.mongodb.net/?retryWrites=true&w=majority`;
 
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
+
 const client = new MongoClient(uri, {
     serverApi: {
         version: ServerApiVersion.v1,
@@ -23,9 +22,7 @@ const client = new MongoClient(uri, {
     }
 });
 
-async function run() {
-    try {
-        await client.connect();
+
         const GrouopData = client.db("hobby_hub").collection("createdGroup");
         const userCollection = client.db("hobby_hub").collection("users");
 
@@ -93,16 +90,7 @@ async function run() {
 
 
 
-        // await client.db("admin").command({ ping: 1 });
-        // console.log("Pinged your deployment. You successfully connected to MongoDB!");
-
-
-
-    } catch (error) {
-        console.error("MongoDB connection error:", error);
-    }
-}
-run();
+ 
 
 app.get("/", (req, res) => {
     res.send("Assignment 10 server is running");
